@@ -77,13 +77,17 @@ public class VirtualDesktop : IDisposable
     #endregion
     
     #region Destructors
-    // Switch to the desktop we were on before.
+    // Switch to the desktop we were on before and clean up resources.
     public void Dispose()
     {
-        SwitchToOrginal();
-        ((IDisposable)this).Dispose();
+        SwitchToOriginal();
+        Dispose(true);
+
+        // This takes the already destroyed desktop off the finalization queue so the GC
+        // doesn’t call the finalization code twice.
+        GC.SuppressFinalize(this);
     }
-     
+
     // Delete our custom one.
     protected virtual void Dispose(bool disposing)
     {
@@ -91,16 +95,6 @@ public class VirtualDesktop : IDisposable
         {
             CloseDesktop(DesktopPtr);
         }
-    }
-     
-    // ... flush!
-    void IDisposable.Dispose()
-    {
-        Dispose(true);
-        
-        // This takes the already destroyed desktop off the finalization queue so the GC
-        // doesn’t call the finalization code twice.
-        GC.SuppressFinalize(this);
     }
     #endregion
     
@@ -122,10 +116,10 @@ public class VirtualDesktop : IDisposable
         SwitchDesktop(DesktopPtr);
     }
      
-    public void SwitchToOrginal()
+    public void SwitchToOriginal()
     {
-        SwitchDesktop(_hOrigDesktop);
         SetThreadDesktop(_hOrigDesktop);
+        SwitchDesktop(_hOrigDesktop);
     }
     #endregion
 
