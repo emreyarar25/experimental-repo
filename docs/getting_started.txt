@@ -1,0 +1,1 @@
+This repository demonstrates a simple Retrieval Augmented Generation (RAG) chatbot. Add your own documents to the docs/ directory and rebuild the vector store.
